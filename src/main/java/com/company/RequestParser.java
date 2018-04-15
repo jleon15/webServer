@@ -1,18 +1,23 @@
 package com.company;
 
+import javafx.util.Pair;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 
 public class RequestParser{
 
     private BufferedReader bufferedReader;
     private HashMap<String, String> requestHeader;
+    private List<Pair<String,String>> postBody;
 
-    public RequestParser (BufferedReader bufferedReader, HashMap<String, String> requestHeader) {
+    public RequestParser (BufferedReader bufferedReader, HashMap<String, String> requestHeader, List<Pair<String, String>> postBody) {
         this.bufferedReader = bufferedReader;
         this.requestHeader = requestHeader;
+        this.postBody = postBody;
         try {
             this.parseRequest();
         } catch (IOException e) {
@@ -39,7 +44,7 @@ public class RequestParser{
     private boolean isNecessaryField(String field){
         if (field.equals("GET")||field.equals("HEAD")||field.equals("POST")||field.equals("Accept:")||
                 field.equals("Content-type:")||field.equals("Content-length:")||
-                field.equals("Date:")|| field.equals("Host:")|| field.equals("Referer:")|| field.equals("Server")){
+                field.equals("Date:")|| field.equals("Host:")|| field.equals("Referer:")|| field.equals("Server:")){
             return true;
         }
         return false;
