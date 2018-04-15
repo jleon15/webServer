@@ -1,6 +1,7 @@
 package com.company;
 
 import javafx.util.Pair;
+import org.apache.commons.io.FileUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,51 +16,70 @@ import java.util.List;
 public class RequestProcessor{
 
     private HashMap<String, String> requestHeader;
-    private List<Pair<String,String>> postBody;
-    private List<String> mimeTypes;
     private boolean isImage;
+    private byte[] imagePayload;
+    private String textPayload;
 
     public RequestProcessor(){
-        this.mimeTypes = new ArrayList<String>();
-        this.fillMimetypesList(this.mimeTypes);
         isImage = false;
     }
 
     public void processRequest(){
-        if (this.obtainRequestedFileName().equals(null)){
+        if (this.obtainRequestedFileName() == null){
             //Error 501
             this.requestHeader.put("statusCode", "HTTP/1.1 501 Not Implemented");
+            System.out.println("0000000000000000000 HTTP/1.1 501 Not Implemented");
+        }
+        else if(this.obtainRequestedFileName().equals(".")){ //cuando no se solicita un elemento
+            this.requestHeader.put("statusCode", "HTTP/1.1 200 OK");
+            System.out.println("0000000000000000000 HTTP/1.1 200 ok");
         }
         else{
+            System.out.println("WHATISWHAT");
             String requestedFileName = this.obtainRequestedFileName();
+            System.out.println("1111111111111111111111  "+requestedFileName);
             File requestedFile = this.findFile(requestedFileName ,new File("./resources"));
-            if (requestedFile.equals(null)){
+            if (requestedFile ==null){
                 // Error 404
                 this.requestHeader.put("statusCode", "HTTP/1.1 404 Not Found");
+                System.out.println("0000000000000000000 HTTP/1.1 404 Not Found");
             }
             else{
-                //ver si es una imagen o si es texto
-                String[] fileNameParts = requestedFileName.split(".");
+                //el archivo fue encontrado
+                long contentLength = requestedFile.length();
+                this.requestHeader.put("contentLength", String.valueOf(contentLength));
+                this.requestHeader.put("statusCode", "HTTP/1.1 200 OK");
+                System.out.println("0000000000000000000 HTTP/1.1 200 OK");
+                String[] fileNameParts = requestedFileName.split("."); //obtener extension del archivo
                 this.storeMimeType(fileNameParts[1]);
-                if (fileNameParts[1].equals("jpg") || fileNameParts[1].equals("png")){
-                    //es imagen
-                    this.isImage = true;
-                    try {
-                        byte[] imageBytes = extractImageBytes(requestedFile);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                //buscar payload solo si es un GET
+                if (this.requestHeader.containsKey("GET")){
+                    //ver si es una imagen o si es texto
+                    if (fileNameParts[1].equals("jpg") || fileNameParts[1].equals("png")){
+                        //es imagen
+                        this.isImage = true;
+                        try {
+                            imagePayload = extractImageBytes(requestedFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else{
+                        //es texto
+                        try {
+                            textPayload = FileUtils.readFileToString(requestedFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
-                else{
-                    //es texto
-                  //  String str = FileUtils.readFileToString(requestedFile);
 
-                }
             }
         }
     }
 
-    public byte[] extractImageBytes (File image) throws IOException {
+    private byte[] extractImageBytes (File image) throws IOException {
         // open image
         File imgPath = image;
         BufferedImage bufferedImage = ImageIO.read(imgPath);
@@ -71,8 +91,8 @@ public class RequestProcessor{
         return ( data.getData() );
     }
 
-    public String obtainRequestedFileName () {
-        String URL = "";
+    private String obtainRequestedFileName () {
+        String URL;
         if (this.requestHeader.containsKey("GET")){
             URL = this.requestHeader.get("GET");
         }
@@ -83,17 +103,22 @@ public class RequestProcessor{
             URL = this.requestHeader.get("POST");
         }
         else{
-            return URL;
+            return null;
         }
         String[] urlParts= URL.split("/");
         int numElements = urlParts.length;
-        return urlParts[numElements];
+        if (urlParts.length == 0){
+            return ".";
+        }
+        return urlParts[numElements-1];
     }
 
-    public File findFile(String name, File file)
+    private File findFile(String name, File file)
     {
+        
         File[] filesList = file.listFiles();
         if (filesList != null){
+            System.out.println("          FILE LIST DIFERENTE DE NULL");
             for (File currentFile : filesList){
                 if (currentFile.isDirectory()){
                     findFile( name , currentFile);
@@ -106,7 +131,7 @@ public class RequestProcessor{
         return null;
     }
 
-    public void storeMimeType (String extension){
+    private void storeMimeType (String extension){
         if (extension.equals("jpg") || extension.equals("jpeg")){
             this.requestHeader.put("mimeType", "image/jpeg");
         }
@@ -122,26 +147,28 @@ public class RequestProcessor{
         else if (extension.equals("txt") || extension.equals("c") || extension.equals("h")){
             this.requestHeader.put("mimeType", "text/plain");
         }
+        else{
+            if (!this.requestHeader.containsKey("POST")){
+                this.requestHeader.put("statusCode", "HTTP/1.1 406 Not Acceptable");
+                System.out.println("0000000000000000000000000 HTTP/1.1 406 Not Acceptable");
+            }
+        }
 
-    }
-
-    private void fillMimetypesList(List<String> mimetypes){
-        this.mimeTypes.add("text/css");
-        this.mimeTypes.add("text/html");
-        this.mimeTypes.add("text/plain");
-        this.mimeTypes.add("image/jpeg");
-        this.mimeTypes.add("image/png");
     }
 
     public void setRequestHeader(HashMap<String, String> requestHeader) {
         this.requestHeader = requestHeader;
     }
 
-    public void setPostBody(List<Pair<String, String>> postBody) {
-        this.postBody = postBody;
-    }
-
     public boolean isImage() {
         return isImage;
+    }
+
+    public byte[] getImagePayload() {
+        return imagePayload;
+    }
+
+    public String getTextPayload() {
+        return textPayload;
     }
 }

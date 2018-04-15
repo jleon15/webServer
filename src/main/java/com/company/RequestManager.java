@@ -26,6 +26,7 @@ public class RequestManager {
         this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
         this.printHM();
+
     }
 
     public void printHM(){
@@ -37,11 +38,18 @@ public class RequestManager {
     }
 
     public void manageRequest(){
-        this.requestProcessor.setRequestHeader(requestHeader);
+        this.requestProcessor.setRequestHeader(this.requestHeader);
+        this.requestProcessor.processRequest();
         if (this.requestHeader.containsKey("GET")){
+            if (this.requestProcessor.isImage()){
+                byte [] imagePayload = this.requestProcessor.getImagePayload();
+            }
+            else{
+                String textString = this.requestProcessor.getTextPayload();
+                System.out.println(textString);
+
+            }
         }
-
-
     }
 
 
