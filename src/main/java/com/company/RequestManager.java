@@ -23,7 +23,7 @@ public class RequestManager {
         this.printWriter = printWriter;
         this.requestParser = new RequestParser(this.bufferedReader, this.requestHeader);
         this.requestProcessor = new RequestProcessor();
-        this.responseBuilder = new ResponseBuilder();
+        this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
         this.printHM();
     }
