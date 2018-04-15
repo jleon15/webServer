@@ -2,26 +2,27 @@ package com.company;
 
 import com.company.Connection.LogWriter;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.HashMap;
 
 public class RequestManager {
 
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private BufferedReader bufferedReader;
+    private PrintWriter printWriter;
+    private LogWriter logWriter;
     private RequestProcessor requestProcessor;
     private RequestParser requestParser;
     private ResponseBuilder responseBuilder;
-    private LogWriter logWriter;
 
-    public RequestManager(OutputStream outputStream, InputStream inputStream, LogWriter logWriter){
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
+    public RequestManager(BufferedReader bufferedReader, PrintWriter printWriter, LogWriter logWriter) throws IOException {
+        this.bufferedReader = bufferedReader;
+        this.printWriter = printWriter;
+        this.requestParser = new RequestParser(this.bufferedReader);
         this.requestProcessor = new RequestProcessor();
-        this.requestParser = new RequestParser(this.inputStream);
         this.responseBuilder = new ResponseBuilder();
         this.logWriter = logWriter;
+
+        System.out.println(this.requestParser.parseRequest());
     }
 
 

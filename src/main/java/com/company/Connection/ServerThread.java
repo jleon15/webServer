@@ -5,54 +5,34 @@ import com.company.RequestManager;
 import java.io.*;
 import java.net.Socket;
 
-public class ServerThread implements Runnable {
+public class ServerThread extends Thread {
     private Socket socket;
-    private OutputStream outputStream;
-    private InputStream inputStream;
+    private PrintWriter printWriter;
+    private BufferedReader bufferedReader;
     private RequestManager requestManager;
+    private LogWriter logWriter;
 
 
-    public ServerThread(OutputStream outputStream, InputStream inputStream) {
-        this.outputStream = outputStream;
-        this.inputStream = inputStream;
+    public ServerThread(Socket socket, LogWriter logWriter) throws IOException {
+        this.socket = socket;
+        this.bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+        this.printWriter = new PrintWriter(this.socket.getOutputStream());
+        this.logWriter = logWriter;
+
     }
 
     public void run() {
         System.out.println("Entro al run");
-        System.out.println(getStringFromInputStream(inputStream));
-        //this.requestManager = new RequestManager();
-    }
-
-    private static String getStringFromInputStream(InputStream is) {
-
-        BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
-
-        String line;
         try {
-            br = new BufferedReader(new InputStreamReader(is));
-            while ((line = br.readLine()) != null ) {
-                if (!line.equals("")){
-                    sb.append(line);
-                    sb.append("*****");
-                }
-
-
-            }
+            this.requestManager = new RequestManager(this.bufferedReader, this.printWriter, logWriter);
+            this.socket.close();
+            this.bufferedReader.close();
+            this.printWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
-
-        return sb.toString();
-
     }
+
+
 
 }

@@ -9,25 +9,25 @@ public class Server {
     private Socket socket;
     private ServerSocket serverSocket;
     private int port;
+    private LogWriter logWriter;
 
     public Server(int port) {
         this.port = port;
+        this.logWriter = new LogWriter();
         try {
             this.serverSocket = new ServerSocket(this.port);
         } catch (IOException e) {
-            System.err.println("Error trying to create the server socket.");
+            System.err.println("Error al intentar crear el socket.");
         }
     }
 
     public void startServer() {
-        Thread serverThread;
-
+        System.out.println("El servidor está esperando nuevas conexiones...");
         while (true) {
             try {
-                System.out.println("Server is waiting for connections...");
                 this.socket = this.serverSocket.accept();
-                System.out.println("Connection successfully established");
-                serverThread = new Thread(new ServerThread(this.socket.getOutputStream(), this.socket.getInputStream()));
+                System.out.println("Conexión establecida de manera exitosa.");
+                ServerThread serverThread = new ServerThread(this.socket, this.logWriter);
                 serverThread.start();
             } catch (Exception e) {
                 System.out.println("Exception: " + e);
