@@ -8,16 +8,30 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * El parseo de la solicitud se realiza aquí, para devolverle al RequestManager
+ * un mapa con los valores del header y, en el caso de un POST, el body.
+ *
+ * @author María José Cubero Hidalgo
+ * @author Josué León Sarkis
+ */
 public class RequestParser{
 
     private BufferedReader bufferedReader;
-    private HashMap<String, String> requestHeader;
-    private List<Pair<String,String>> postBody;
 
-    public RequestParser (BufferedReader bufferedReader, HashMap<String, String> requestHeader, List<Pair<String, String>> postBody) {
+    /**
+     * Mapa el cual almacena los valores del header de la solicitud y el body si es un POST.
+     */
+    private HashMap<String, String> requestHeader;
+
+    /**
+     * Constructor que inicializa los atributos de la clase.
+     * @param bufferedReader Flujo que es el mismo creado en el ServerThread para leer la solicitud.
+     * @param requestHeader Mapa creado en el RequestManager para llenarlo con los valores parseados.
+     */
+    public RequestParser (BufferedReader bufferedReader, HashMap<String, String> requestHeader) {
         this.bufferedReader = bufferedReader;
         this.requestHeader = requestHeader;
-        this.postBody = postBody;
         try {
             this.parseRequest();
         } catch (IOException e) {
@@ -25,22 +39,38 @@ public class RequestParser{
         }
     }
 
+    /**
+     * Parsea la solicitud e ingresa los valores en el mapa.
+     * @throws IOException
+     */
     private void parseRequest() throws IOException {
         String request = "";
+        boolean endOfHeader = false;
         while(this.bufferedReader.ready()) {
             request += (char) this.bufferedReader.read();
         }
         String[] requestParts = request.split("\n");
         for (int i = 0; i < requestParts.length; i++) {
             String line = requestParts[i];
-            String[] lineParts = line.split(" ");
-            if (isNecessaryField(lineParts[0])){
-                this.requestHeader.put(lineParts[0], lineParts[1]);
+            if(!(line.trim().isEmpty())){
+                String[] lineParts = line.split(" ");
+                if (isNecessaryField(lineParts[0]) && !endOfHeader){
+                    this.requestHeader.put(lineParts[0], lineParts[1]);
+                } else if(endOfHeader){
+                    this.requestHeader.put("postBody",lineParts[0]);
+                }
+            } else {
+                endOfHeader = true;
             }
         }
         System.out.println(request);
     }
 
+    /**
+     * Chequea si un elemento del header es de los necesarios para el servidor.
+     * @param field Elemento del header.
+     * @return true si es necesario, false si no.
+     */
     private boolean isNecessaryField(String field){
         if (field.equals("GET")||field.equals("HEAD")||field.equals("POST")||field.equals("Accept:")||
                 field.equals("Content-type:")||field.equals("Content-length:")||

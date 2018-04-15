@@ -16,15 +16,15 @@ public class RequestManager {
     private RequestParser requestParser;
     private ResponseBuilder responseBuilder;
     private HashMap<String, String> requestHeader;
-    private List<Pair<String,String>> postBody;
 
     public RequestManager(BufferedReader bufferedReader, PrintWriter printWriter, LogWriter logWriter) throws IOException {
         this.requestHeader = new HashMap<String, String>();
         this.bufferedReader = bufferedReader;
         this.printWriter = printWriter;
-        this.requestParser = new RequestParser(this.bufferedReader, this.requestHeader, this.postBody);
+        this.requestParser = new RequestParser(this.bufferedReader, this.requestHeader);
+        System.out.println("Salio de parsear");
         this.requestProcessor = new RequestProcessor();
-        this.responseBuilder = new ResponseBuilder();
+        this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
         this.printHM();
     }
