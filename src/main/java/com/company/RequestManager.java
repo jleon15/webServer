@@ -22,15 +22,14 @@ public class RequestManager {
         this.bufferedReader = bufferedReader;
         this.printWriter = printWriter;
         this.requestParser = new RequestParser(this.bufferedReader, this.requestHeader);
-        System.out.println("Salio de parsear");
         this.requestProcessor = new RequestProcessor();
         this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
         this.printHM();
+
     }
 
     public void printHM(){
-        System.out.println("***********************************");
         for (String name: requestHeader.keySet()){
             String key =name.toString();
             String value = requestHeader.get(name).toString();
@@ -39,9 +38,18 @@ public class RequestManager {
     }
 
     public void manageRequest(){
-        this.requestHeader = this.requestParser.getRequestHeader();
-        this.requestProcessor.setRequestHeader(requestHeader);
+        this.requestProcessor.setRequestHeader(this.requestHeader);
+        this.requestProcessor.processRequest();
+        if (this.requestHeader.containsKey("GET")){
+            if (this.requestProcessor.isImage()){
+                byte [] imagePayload = this.requestProcessor.getImagePayload();
+            }
+            else{
+                String textString = this.requestProcessor.getTextPayload();
+                System.out.println(textString);
 
+            }
+        }
     }
 
 

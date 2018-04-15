@@ -49,6 +49,7 @@ public class ServerThread extends Thread {
         System.out.println("Entro al run");
         try {
             this.requestManager = new RequestManager(this.bufferedReader, this.printWriter, logWriter);
+            this.requestManager.manageRequest();
             this.socket.close();
             this.bufferedReader.close();
             this.printWriter.close();
