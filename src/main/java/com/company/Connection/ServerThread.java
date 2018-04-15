@@ -18,6 +18,7 @@ public class ServerThread implements Runnable {
     }
 
     public void run() {
+        System.out.println("Entro al run");
         System.out.println(getStringFromInputStream(inputStream));
         //this.requestManager = new RequestManager();
     }
@@ -30,8 +31,12 @@ public class ServerThread implements Runnable {
         String line;
         try {
             br = new BufferedReader(new InputStreamReader(is));
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+            while ((line = br.readLine()) != null ) {
+                if (!line.equals("")){
+                    sb.append(line);
+                    sb.append("*****");
+                }
+
 
             }
         } catch (IOException e) {
