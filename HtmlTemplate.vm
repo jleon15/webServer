@@ -1,0 +1,21 @@
+<p hidden> $estadisticas </p>
+<font size = "8"><b>Bit&#225cora</b></font>
+
+<table cellpadding="8" cellspacing="3" border="3">
+    <tr>
+        <th>Método</th>
+        <th>Estampilla de tiempo</th>
+        <th>Servidor</th>
+        <th>Refiere</th>
+        <th>URL</th>
+        <th>Datos</th>
+     </tr>
+    <tr>
+        <td>$estadisticas</td>
+        <td>$estadisticas</td>
+        <td>$estadisticas</td>
+        <td>$estadisticas</td>
+        <td>$estadisticas</td>
+        <td>$estadisticas</td>
+    </tr>
+</table>

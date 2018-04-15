@@ -30,54 +30,10 @@ public class HTML {
         tem = velo.getTemplate("HtmlTemplate.vm");
         context = new VelocityContext();
         writer = new StringWriter();
-        fileNumber = 0;
         files = new ArrayList();
     }
 
-    /**
-     * Sets the initial parameters in the HTML.
-     * @param iter
-     * @param maxT
-     * @param slowMode
-     * @param k
-     * @param n
-     * @param p
-     * @param m
-     * @param t
-     */
-    public void setInitialParameters(int iter,double maxT,boolean slowMode, int k, int n, int p, int m, double t){
-        context.put("numeroIteraciones",iter);
-        context.put("tiempoSimulacion",maxT);
-        context.put("modoLento",slowMode);
-        context.put("k",k);
-        context.put("n",n);
-        context.put("p",p);
-        context.put("m",m);
-        context.put("t",t);
-    }
-
-    /**
-     * Set the Global statistics in the HTML.
-     * @param gui
-     */
-    public void setGlobalStatistics(GUI gui){
-        context.put("estadisticasGui",gui);
-    }
-
-    /**
-     * Generates the module's statistics in the HTML.
-     * @param s
-     * @param iter
-     * @param maxT
-     * @param slowMode
-     * @param k
-     * @param n
-     * @param p
-     * @param m
-     * @param ti
-     * @throws Exception
-     */
-    public void generateModuleStatistics(Simulation s, int iter,double maxT,boolean slowMode, int k, int n, int p, int m, double ti) throws Exception {
+    public void generateHTMLLog() throws Exception {
         fileNumber = fileNumber + 1;
         files.add(fileNumber);
         VelocityEngine v = new VelocityEngine();
@@ -85,24 +41,11 @@ public class HTML {
         Template t = v.getTemplate("ModuleStatsTemplate.vm");
         VelocityContext c = new VelocityContext();
         StringWriter w = new StringWriter();
-        c.put("estadisticasMod1",s.getStage1().getStatistics());
-        c.put("estadisticasMod2",s.getStage2().getStatistics());
-        c.put("estadisticasMod3",s.getStage3().getStatistics());
-        c.put("estadisticasMod4",s.getStage4().getStatistics());
-        c.put("estadisticasMod5",s.getStage5().getStatistics());
-        c.put("numeroIteracion",fileNumber);
-        c.put("numeroIteracion", fileNumber);
-        c.put("numeroIteraciones",iter);
-        c.put("tiempoSimulacion",maxT);
-        c.put("modoLento",slowMode);
-        c.put("k",k);
-        c.put("n",n);
-        c.put("p",p);
-        c.put("m",m);
-        c.put("t",ti);
+        //c.put("estadisticasMod1",s.getStage1().getStatistics());
+
         t.merge(c,w);
-        File iterationStatistics = new File("statistics/statisticsIteration" + fileNumber +".html");
-        try (BufferedWriter buf = new BufferedWriter(new FileWriter(iterationStatistics))) {
+        File bitacora = new File("bitácora.html");
+        try (BufferedWriter buf = new BufferedWriter(new FileWriter(bitacora))) {
             buf.write(w.toString());
             buf.close();
         } catch (IOException e) {
