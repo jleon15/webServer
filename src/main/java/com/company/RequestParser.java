@@ -54,6 +54,9 @@ public class RequestParser{
             String line = requestParts[i];
             if(!(line.trim().isEmpty())){
                 String[] lineParts = line.split(" ");
+                if(i == 0) {
+                    this.requestHeader.put("method",lineParts[0]);
+                }
                 if (isNecessaryField(lineParts[0]) && !endOfHeader){
                     this.requestHeader.put(lineParts[0], lineParts[1]);
                 } else if(endOfHeader){

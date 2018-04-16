@@ -37,7 +37,7 @@ public class Server {
      * Constructor que crea la bitácora y el ServerSocket.
      * @param port
      */
-    public Server(int port) {
+    public Server(int port) throws Exception {
         this.port = port;
         this.logWriter = new LogWriter();
         try {

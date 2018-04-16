@@ -4,6 +4,7 @@ import com.company.Connection.LogWriter;
 import javafx.util.Pair;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,18 +27,17 @@ public class RequestManager {
         this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
         this.printHM();
-
     }
 
     public void printHM(){
         for (String name: requestHeader.keySet()){
-            String key =name.toString();
+            String key = name.toString();
             String value = requestHeader.get(name).toString();
             System.out.println(key + " " + value);
         }
     }
 
-    public void manageRequest(){
+    public void manageRequest() throws IOException {
         this.requestProcessor.setRequestHeader(this.requestHeader);
         this.requestProcessor.processRequest();
         if (this.requestHeader.containsKey("GET")){
@@ -50,6 +50,18 @@ public class RequestManager {
 
             }
         }
+
+        // LLAMAR AL BUILDER Y DEVOLVER LA RESPUESTA
+
+        String [] registroConexion = new String[6];
+        registroConexion[0] = this.requestHeader.get("method");
+        registroConexion[1] = String.valueOf(new Timestamp(System.currentTimeMillis()).getTime());
+        registroConexion[2] = "localhost";
+        registroConexion[3] = this.requestHeader.get("referer");
+        registroConexion[4] = this.requestHeader.get(this.requestHeader.get("method"));
+        registroConexion[5] = this.requestHeader.get("postBody");
+        this.logWriter.getBitacoraSolicitudes().add(registroConexion);
+        this.logWriter.generarBitacoraHTML();
     }
 
 
