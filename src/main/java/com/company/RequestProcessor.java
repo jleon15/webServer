@@ -32,13 +32,13 @@ public class RequestProcessor{
         }
         else if(this.obtainRequestedFileName().equals(".")){ //cuando no se solicita un elemento
             this.requestHeader.put("statusCode", "HTTP/1.1 200 OK");
-            System.out.println("0000000000000000000 HTTP/1.1 200 ok");
+            System.out.println("0000000000000000000 HTTP/1.1 200 OK");
         }
         else{
-            System.out.println("WHATISWHAT");
             String requestedFileName = this.obtainRequestedFileName();
+
             System.out.println("1111111111111111111111  "+requestedFileName);
-            File requestedFile = this.findFile(requestedFileName ,new File("./resources"));
+            File requestedFile = this.findFile(requestedFileName ,new File("./src/main/resources"));
             if (requestedFile ==null){
                 // Error 404
                 this.requestHeader.put("statusCode", "HTTP/1.1 404 Not Found");
@@ -50,7 +50,8 @@ public class RequestProcessor{
                 this.requestHeader.put("contentLength", String.valueOf(contentLength));
                 this.requestHeader.put("statusCode", "HTTP/1.1 200 OK");
                 System.out.println("0000000000000000000 HTTP/1.1 200 OK");
-                String[] fileNameParts = requestedFileName.split("."); //obtener extension del archivo
+                String[] fileNameParts = requestedFileName.split("\\."); //obtener extension del archivo
+                System.out.println("--------------------------"+requestedFileName);
                 this.storeMimeType(fileNameParts[1]);
                 //buscar payload solo si es un GET
                 if (this.requestHeader.containsKey("GET")){
@@ -115,10 +116,9 @@ public class RequestProcessor{
 
     private File findFile(String name, File file)
     {
-        
+
         File[] filesList = file.listFiles();
         if (filesList != null){
-            System.out.println("          FILE LIST DIFERENTE DE NULL");
             for (File currentFile : filesList){
                 if (currentFile.isDirectory()){
                     findFile( name , currentFile);
