@@ -26,6 +26,7 @@ public class ServerThread extends Thread {
 
     private RequestManager requestManager;
     private LogWriter logWriter;
+    private OutputStream outputStream;
 
     /**
      * Constructor que recibe el socket y la bitácora para inicializar el bufferedReader y el printWriter.
@@ -36,9 +37,9 @@ public class ServerThread extends Thread {
     public ServerThread(Socket socket, LogWriter logWriter) throws IOException {
         this.socket = socket;
         this.bufferedReader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-        this.printWriter = new PrintWriter(this.socket.getOutputStream());
+        this.outputStream = this.socket.getOutputStream();
+        this.printWriter = new PrintWriter(outputStream);
         this.logWriter = logWriter;
-
     }
 
     /**
@@ -48,7 +49,7 @@ public class ServerThread extends Thread {
     public void run() {
         System.out.println("Entro al run");
         try {
-            this.requestManager = new RequestManager(this.bufferedReader, this.printWriter, this.logWriter);
+            this.requestManager = new RequestManager(this.bufferedReader, this.printWriter, this.logWriter, this.outputStream);
             this.requestManager.manageRequest();
             this.socket.close();
             this.bufferedReader.close();
@@ -57,7 +58,5 @@ public class ServerThread extends Thread {
             e.printStackTrace();
         }
     }
-
-
 
 }

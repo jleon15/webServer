@@ -17,8 +17,9 @@ public class RequestManager {
     private RequestParser requestParser;
     private ResponseBuilder responseBuilder;
     private HashMap<String, String> requestHeader;
+    private OutputStream outputStream;
 
-    public RequestManager(BufferedReader bufferedReader, PrintWriter printWriter, LogWriter logWriter) throws IOException {
+    public RequestManager(BufferedReader bufferedReader, PrintWriter printWriter, LogWriter logWriter, OutputStream outputStream) throws IOException {
         this.requestHeader = new HashMap<String, String>();
         this.bufferedReader = bufferedReader;
         this.printWriter = printWriter;
@@ -26,6 +27,7 @@ public class RequestManager {
         this.requestProcessor = new RequestProcessor();
         this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
+        this.outputStream = outputStream;
         this.printHM();
     }
 
@@ -40,18 +42,22 @@ public class RequestManager {
     public void manageRequest() throws IOException {
         this.requestProcessor.setRequestHeader(this.requestHeader);
         this.requestProcessor.processRequest();
+
+        String responseHeader = this.responseBuilder.createHeader();
+        this.printWriter.write(responseHeader);
+
         if (this.requestHeader.containsKey("GET")){
             if (this.requestProcessor.isImage()){
                 byte [] imagePayload = this.requestProcessor.getImagePayload();
+                this.outputStream.write(imagePayload);
             }
             else{
                 String textString = this.requestProcessor.getTextPayload();
+                this.printWriter.write(textString);
                 System.out.println(textString);
-
             }
         }
-
-        // LLAMAR AL BUILDER Y DEVOLVER LA RESPUESTA
+        this.printWriter.flush();
 
         String [] registroConexion = new String[6];
         registroConexion[0] = this.requestHeader.get("method");
