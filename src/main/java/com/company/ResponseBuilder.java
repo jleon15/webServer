@@ -28,11 +28,11 @@ public class ResponseBuilder{
      */
     public String createHeader() {
 
-        this.responseHeader += this.requestHeader.get("statusCode") + "\n";
-        this.responseHeader += "Date: " + this.getDate() + "\n";
-        this.responseHeader += "Server: ServidorLocal/1.0\n";
-        this.responseHeader += "Content-Length: " + this.requestHeader.get("contentLength") + "\n";
-        this.responseHeader += "Content-Type " + this.requestHeader.get("mimeType") + "\n\n";
+        this.responseHeader += this.requestHeader.get("statusCode") + "\r\n";
+        this.responseHeader += "Date: " + this.getDate() + "\r\n";
+        this.responseHeader += "Server: ServidorLocal/1.0\r\n";
+        this.responseHeader += "Content-Length: " + this.requestHeader.get("contentLength") + "\r\n";
+        this.responseHeader += "Content-Type " + this.requestHeader.get("mimeType") + "\r\n\r\n";
 
         return this.responseHeader;
     }

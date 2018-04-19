@@ -30,10 +30,10 @@ public class RequestManager {
         this.outputStream = outputStream;
     }
 
-    public void printHM(){
+    public void printHM() {
         System.out.println("the fuuuuck");
-        System.out.println("-> " +this.requestHeader.size());
-        for (String name: requestHeader.keySet()){
+        System.out.println("-> " + this.requestHeader.size());
+        for (String name : requestHeader.keySet()) {
             String key = name.toString();
             String value = requestHeader.get(name).toString();
             System.out.println(key + "***********************" + value);
@@ -44,19 +44,19 @@ public class RequestManager {
         this.printHM();
         System.out.println("ya debi haber impreso");
         this.requestProcessor.setRequestHeader(this.requestHeader);
-        boolean isImage= this.requestProcessor.processRequest();
+        boolean isImage = this.requestProcessor.processRequest();
 
         String responseHeader = this.responseBuilder.createHeader();
         this.printWriter.write(responseHeader);
+        this.printWriter.flush();
 
-        if (this.requestHeader.containsKey("GET")){
-            if (!this.requestHeader.get("GET").equals("/") && !this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 404 Not Found")){
-                if (isImage){
-                    byte [] imagePayload = this.requestProcessor.getImagePayload();
+        if (this.requestHeader.containsKey("GET")) {
+            if (!this.requestHeader.get("GET").equals("/") && !this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 404 Not Found")) {
+                if (isImage) {
+                    byte[] imagePayload = this.requestProcessor.getImagePayload();
                     this.outputStream.write(imagePayload);
 
-                }
-                else{
+                } else {
                     String textString = this.requestProcessor.getTextPayload();
                     this.printWriter.write(textString);
                     System.out.println(textString);
@@ -65,16 +65,17 @@ public class RequestManager {
         }
         this.printWriter.flush();
 
-        String [] registroConexion = new String[6];
-        registroConexion[0] = this.requestHeader.get("method");
-        registroConexion[1] = String.valueOf(new Timestamp(System.currentTimeMillis()).getTime());
-        registroConexion[2] = "localhost";
-        registroConexion[3] = this.requestHeader.get("referer");
-        registroConexion[4] = this.requestHeader.get(this.requestHeader.get("method"));
-        registroConexion[5] = this.requestHeader.get("postBody");
-        this.logWriter.getBitacoraSolicitudes().add(registroConexion);
-        this.logWriter.generarBitacoraHTML();
+        if (this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 200 OK")) {
+            String[] registroConexion = new String[6];
+            registroConexion[0] = this.requestHeader.get("method");
+            registroConexion[1] = String.valueOf(new Timestamp(System.currentTimeMillis()).getTime());
+            registroConexion[2] = "localhost";
+            registroConexion[3] = this.requestHeader.get("referer");
+            registroConexion[4] = this.requestHeader.get(this.requestHeader.get("method"));
+            registroConexion[5] = this.requestHeader.get("postBody");
+            this.logWriter.getBitacoraSolicitudes().add(registroConexion);
+            this.logWriter.generarBitacoraHTML();
+        }
+
     }
-
-
 }

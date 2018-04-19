@@ -2,6 +2,7 @@ package com.company.Connection;
 
 import com.company.RequestManager;
 
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 
@@ -51,9 +52,12 @@ public class ServerThread extends Thread {
         try {
             this.requestManager = new RequestManager(this.bufferedReader, this.printWriter, this.logWriter, this.outputStream);
             this.requestManager.manageRequest();
-            this.socket.close();
             this.bufferedReader.close();
             this.printWriter.close();
+            this.outputStream.close();
+            this.socket.close();
+            File bitacora = new File("Bitacora.html");
+            Desktop.getDesktop().browse(bitacora.toURI());
         } catch (IOException e) {
             e.printStackTrace();
         }
