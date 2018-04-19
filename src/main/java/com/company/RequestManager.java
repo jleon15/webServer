@@ -41,20 +41,23 @@ public class RequestManager {
 
     public void manageRequest() throws IOException {
         this.requestProcessor.setRequestHeader(this.requestHeader);
-        this.requestProcessor.processRequest();
+        boolean isImage= this.requestProcessor.processRequest();
 
         String responseHeader = this.responseBuilder.createHeader();
         this.printWriter.write(responseHeader);
 
         if (this.requestHeader.containsKey("GET")){
-            if (this.requestProcessor.isImage()){
-                byte [] imagePayload = this.requestProcessor.getImagePayload();
-                this.outputStream.write(imagePayload);
-            }
-            else{
-                String textString = this.requestProcessor.getTextPayload();
-                this.printWriter.write(textString);
-                System.out.println(textString);
+            if (!this.requestHeader.get("GET").equals("/")){
+                if (isImage){
+                    byte [] imagePayload = this.requestProcessor.getImagePayload();
+                    this.outputStream.write(imagePayload);
+
+                }
+                else{
+                    String textString = this.requestProcessor.getTextPayload();
+                    this.printWriter.write(textString);
+                    System.out.println(textString);
+                }
             }
         }
         this.printWriter.flush();
