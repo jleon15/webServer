@@ -47,6 +47,7 @@ public class RequestParser{
         String request = "";
         boolean endOfHeader = false;
         while(this.bufferedReader.ready()) {
+            System.out.println("entra al buffer reader");
             request += (char) this.bufferedReader.read();
         }
         String[] requestParts = request.split("\n");
@@ -66,7 +67,7 @@ public class RequestParser{
                 endOfHeader = true;
             }
         }
-        System.out.println(request);
+        System.out.println("2222222222222222222222222222222222222222222 "+request);
     }
 
     /**

@@ -28,18 +28,21 @@ public class RequestManager {
         this.responseBuilder = new ResponseBuilder(this.requestHeader);
         this.logWriter = logWriter;
         this.outputStream = outputStream;
-        this.printHM();
     }
 
     public void printHM(){
+        System.out.println("the fuuuuck");
+        System.out.println("-> " +this.requestHeader.size());
         for (String name: requestHeader.keySet()){
             String key = name.toString();
             String value = requestHeader.get(name).toString();
-            System.out.println(key + " " + value);
+            System.out.println(key + "***********************" + value);
         }
     }
 
     public void manageRequest() throws IOException {
+        this.printHM();
+        System.out.println("ya debi haber impreso");
         this.requestProcessor.setRequestHeader(this.requestHeader);
         boolean isImage= this.requestProcessor.processRequest();
 
@@ -47,7 +50,7 @@ public class RequestManager {
         this.printWriter.write(responseHeader);
 
         if (this.requestHeader.containsKey("GET")){
-            if (!this.requestHeader.get("GET").equals("/")){
+            if (!this.requestHeader.get("GET").equals("/") && !this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 404 Not Found")){
                 if (isImage){
                     byte [] imagePayload = this.requestProcessor.getImagePayload();
                     this.outputStream.write(imagePayload);

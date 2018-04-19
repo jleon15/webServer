@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class RequestProcessor {
                         //es imagen
                         isImage = true;
                         try {
-                            imagePayload = extractImageBytes(requestedFile);
+                            imagePayload = extractImageBytes(requestedFile, fileNameParts[1]);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -105,17 +106,19 @@ public class RequestProcessor {
      * @return Array de bytes con la imagen.
      * @throws IOException
      */
-    private byte[] extractImageBytes(File image) throws IOException {
+    private byte[] extractImageBytes(File image, String imageType) throws IOException {
         // open image
-        File imgPath = image;
-        BufferedImage bufferedImage = ImageIO.read(imgPath);
+        BufferedImage bufferedImage = ImageIO.read(image);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        if(imageType.equals("jpg")) {
+            ImageIO.write(bufferedImage, "jpg", byteArrayOutputStream);
+        } else {
+            ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        }
 
-        // get DataBufferBytes from Raster
-        WritableRaster raster = bufferedImage.getRaster();
-        DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
-
-        return (data.getData());
+        return byteArrayOutputStream.toByteArray();
     }
+
 
     /**
      * Lee el request y consigue el nombre del archivo que se está solicitando acceder.
