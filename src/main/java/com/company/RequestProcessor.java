@@ -53,11 +53,10 @@ public class RequestProcessor {
             //Error 501
             this.requestHeader.put("statusCode", "HTTP/1.1 501 Not Implemented");
             System.out.println("0000000000000000000 HTTP/1.1 501 Not Implemented");
-        } else if (requestedFileName.equals("noURL")) { //cuando no se solicita un elemento
-            this.requestHeader.put("statusCode", "HTTP/1.1 200 OK");
-            System.out.println("0000000000000000000 HTTP/1.1 200 OK");
         } else {
-            System.out.println("1111111111111111111111  " + requestedFileName);
+            if ( requestedFileName.equals("noURL")){
+                requestedFileName = "index.html";
+            }
             File requestedFile = this.findFile(requestedFileName, new File("./src/main/resources"));
             if (requestedFile == null) {
                 // Error 404
@@ -73,7 +72,7 @@ public class RequestProcessor {
                 System.out.println("--------------------------" + requestedFileName);
                 this.storeMimeType(fileNameParts[1]);
                 //buscar payload solo si es un GET
-                if (this.requestHeader.containsKey("GET")) {
+                if (!this.requestHeader.containsKey("HEAD")) {
                     //ver si es una imagen o si es texto
                     if (fileNameParts[1].equals("jpg") || fileNameParts[1].equals("png")) {
                         //es imagen

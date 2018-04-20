@@ -50,8 +50,8 @@ public class RequestManager {
         this.printWriter.write(responseHeader);
         this.printWriter.flush();
 
-        if (this.requestHeader.containsKey("GET")) {
-            if (!this.requestHeader.get("GET").equals("/") && !this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 404 Not Found")) {
+        if (!this.requestHeader.containsKey("HEAD")) {
+            if (this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 200 OK")) {
                 if (isImage) {
                     byte[] imagePayload = this.requestProcessor.getImagePayload();
                     this.outputStream.write(imagePayload);
@@ -61,9 +61,9 @@ public class RequestManager {
                     this.printWriter.write(textString);
                     System.out.println(textString);
                 }
+                this.printWriter.flush();
             }
         }
-        this.printWriter.flush();
 
         if (this.requestHeader.get("statusCode").equalsIgnoreCase("HTTP/1.1 200 OK")) {
             String[] registroConexion = new String[6];
