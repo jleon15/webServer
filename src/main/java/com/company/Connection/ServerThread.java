@@ -56,8 +56,6 @@ public class ServerThread extends Thread {
             this.printWriter.close();
             this.outputStream.close();
             this.socket.close();
-            File bitacora = new File("Bitacora.html");
-            Desktop.getDesktop().browse(bitacora.toURI());
         } catch (IOException e) {
             e.printStackTrace();
         }
