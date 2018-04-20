@@ -52,7 +52,6 @@ public class RequestProcessor {
         if (requestedFileName == null) {
             //Error 501
             this.requestHeader.put("statusCode", "HTTP/1.1 501 Not Implemented");
-            System.out.println("0000000000000000000 HTTP/1.1 501 Not Implemented");
         } else {
             if ( requestedFileName.equals("noURL")){
                 requestedFileName = "index.html";
@@ -61,15 +60,12 @@ public class RequestProcessor {
             if (requestedFile == null) {
                 // Error 404
                 this.requestHeader.put("statusCode", "HTTP/1.1 404 Not Found");
-                System.out.println("0000000000000000000 HTTP/1.1 404 Not Found");
             } else {
                 //el archivo fue encontrado
                 long contentLength = requestedFile.length();
                 this.requestHeader.put("contentLength", String.valueOf(contentLength));
                 this.requestHeader.put("statusCode", "HTTP/1.1 200 OK");
-                System.out.println("0000000000000000000 HTTP/1.1 200 OK");
                 String[] fileNameParts = requestedFileName.split("\\."); //obtener extension del archivo
-                System.out.println("--------------------------" + requestedFileName);
                 this.storeMimeType(fileNameParts[1]);
                 //buscar payload solo si es un GET
                 if (!this.requestHeader.containsKey("HEAD")) {
@@ -138,7 +134,6 @@ public class RequestProcessor {
         String[] urlParts = URL.split("/");
         int numElements = urlParts.length;
         if (urlParts.length == 0) {
-            System.out.println("FDGHJVFKVIJIVG++++++++++++++++++++++++++++");
             return "noURL";
         }
         return urlParts[numElements - 1];
@@ -185,7 +180,21 @@ public class RequestProcessor {
         } else {
             if (!this.requestHeader.containsKey("POST")) {
                 this.requestHeader.put("statusCode", "HTTP/1.1 406 Not Acceptable");
-                System.out.println("0000000000000000000000000 HTTP/1.1 406 Not Acceptable");
+            }
+        }
+
+        if (this.requestHeader.containsKey("Accept:")) {
+            String[] acceptParts = this.requestHeader.get("Accept:").split(",");
+            int i = 0;
+            boolean found = false;
+            while( i < acceptParts.length && !found){
+                if (this.requestHeader.get("mimeType").equalsIgnoreCase(acceptParts[i]) || acceptParts[i].contains("*/*")) {
+                    found = true;
+                }
+                i++;
+            }
+            if (!found) {
+                this.requestHeader.put("statusCode", "HTTP/1.1 406 Not Acceptable");
             }
         }
     }

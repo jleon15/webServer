@@ -31,18 +31,13 @@ public class RequestManager {
     }
 
     public void printHM() {
-        System.out.println("the fuuuuck");
-        System.out.println("-> " + this.requestHeader.size());
         for (String name : requestHeader.keySet()) {
             String key = name.toString();
             String value = requestHeader.get(name).toString();
-            System.out.println(key + "***********************" + value);
         }
     }
 
     public void manageRequest() throws IOException {
-        this.printHM();
-        System.out.println("ya debi haber impreso");
         this.requestProcessor.setRequestHeader(this.requestHeader);
         boolean isImage = this.requestProcessor.processRequest();
 
@@ -59,7 +54,6 @@ public class RequestManager {
                 } else {
                     String textString = this.requestProcessor.getTextPayload();
                     this.printWriter.write(textString);
-                    System.out.println(textString);
                 }
                 this.printWriter.flush();
             }

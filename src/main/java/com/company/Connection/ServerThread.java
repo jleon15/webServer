@@ -48,7 +48,6 @@ public class ServerThread extends Thread {
      * RequestManager que maneje toda la solicitud y luego cierra el socket y sus flujos.
      */
     public void run() {
-        System.out.println("Entro al run");
         try {
             this.requestManager = new RequestManager(this.bufferedReader, this.printWriter, this.logWriter, this.outputStream);
             this.requestManager.manageRequest();
